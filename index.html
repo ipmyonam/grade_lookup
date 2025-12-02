@@ -140,60 +140,56 @@
     </p>
   </div>
 
-  <script>
-    // 🔹 여기 부분에 학생별 성적 데이터를 입력하시면 됩니다.
-    // 키(key)는 학생에게 알려줄 "조회코드"입니다.
-    // 예시: "24A001", "24A002" …
-    const gradeData = {
-  "24A001": { mid: 88, final: 92, etc: 15, total: 95, grade: "A+" },
-  "24A002": { mid: 75, final: 80, etc: 13, total: 84, grade: "B+" }
-    };
+<script>
+  const gradeData = {
+    "24A001": { mid: 88, final: 92, etc: 15, total: 95, grade: "A+" },
+    "24A002": { mid: 75, final: 80, etc: 13, total: 84, grade: "B+" }
+  };
 
-    function lookupGrade() {
-      const codeInput = document.getElementById("codeInput");
-      const code = codeInput.value.trim();
-      const messageEl = document.getElementById("message");
-      const resultEl = document.getElementById("result");
+  function lookupGrade() {
+    const codeInput = document.getElementById("codeInput");
+    const code = codeInput.value.trim();
+    const messageEl = document.getElementById("message");
+    const resultEl = document.getElementById("result");
 
-      if (!code) {
-        messageEl.textContent = "조회코드를 입력하세요.";
-        messageEl.className = "message error";
-        resultEl.style.display = "none";
-        return;
-      }
-
-      // 대소문자 구분 없이 처리하고 싶으면 아래처럼 변환
-      const key = code.toUpperCase();
-      const data = gradeData[key];
-
-      if (!data) {
-        messageEl.textContent = "일치하는 조회코드가 없습니다. 다시 확인하세요.";
-        messageEl.className = "message error";
-        resultEl.style.display = "none";
-        return;
-      }
-
-      // 값 채우기
-      document.getElementById("midScore").textContent = data.mid ?? "-";
-      document.getElementById("finalScore").textContent = data.final ?? "-";
-      document.getElementById("etcScore").textContent = data.etc ?? "-";
-      document.getElementById("totalScore").textContent = data.total ?? "-";
-      document.getElementById("grade").textContent = data.grade ?? "-";
-
-      messageEl.textContent = "성적이 정상적으로 조회되었습니다.";
-      messageEl.className = "message success";
-
-      resultEl.style.display = "block";
+    if (!code) {
+      messageEl.textContent = "조회코드를 입력하세요.";
+      messageEl.className = "message error";
+      resultEl.style.display = "none";
+      return;
     }
 
-    function clearResult() {
-      document.getElementById("codeInput").value = "";
-      document.getElementById("message").textContent = "";
-      document.getElementById("result").style.display = "none";
+    const key = code.toUpperCase();
+    const data = gradeData[key];
+
+    if (!data) {
+      messageEl.textContent = "일치하는 조회코드가 없습니다. 다시 확인하세요.";
+      messageEl.className = "message error";
+      resultEl.style.display = "none";
+      return;
     }
-  </script>
+
+    document.getElementById("midScore").textContent = data.mid ?? "-";
+    document.getElementById("finalScore").textContent = data.final ?? "-";
+    document.getElementById("etcScore").textContent = data.etc ?? "-";
+    document.getElementById("totalScore").textContent = data.total ?? "-";
+    document.getElementById("grade").textContent = data.grade ?? "-";
+
+    messageEl.textContent = "성적이 정상적으로 조회되었습니다.";
+    messageEl.className = "message success";
+
+    resultEl.style.display = "block";
+  }
+
+  function clearResult() {
+    document.getElementById("codeInput").value = "";
+    document.getElementById("message").textContent = "";
+    document.getElementById("result").style.display = "none";
+  }
+</script>
 </body>
 </html>
+
 
 
 
