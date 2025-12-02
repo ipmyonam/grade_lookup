@@ -105,3 +105,82 @@
       <table class="result-table">
         <thead>
           <tr>
+            <th>항목</th>
+            <th>값</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>총점</strong></td>
+            <td id="totalScore"></td>
+          </tr>
+          <tr>
+            <td>등급</td>
+            <td id="grade"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      * 이 페이지는 <strong>한 과목</strong>의 성적만 조회합니다.<br />
+      * 개인정보 보호를 위해 이름 대신 <strong>조회코드</strong>만 사용합니다.
+    </p>
+  </div>
+
+  <script>
+    // 🔹 여기 부분만 교수님이 채우시면 됩니다.
+    //   코드(키) = 학생에게 알려줄 조회코드
+    const gradeData = {
+      "24A001": { total: 95, grade: "A+" },
+      "24A002": { total: 84, grade: "B+" },
+      "24A003": { total: 76, grade: "B0" }
+      // 👉 엑셀에서 만든 코드들을 이 형식으로 쭉 붙여넣으시면 됩니다.
+      // "24A004": { total: 88, grade: "A0" },
+      // ...
+    };
+
+    function lookupGradeInternal() {
+      const codeInput = document.getElementById("codeInput");
+      const code = codeInput.value.trim();
+      const messageEl = document.getElementById("message");
+      const resultEl = document.getElementById("result");
+
+      if (!code) {
+        messageEl.textContent = "조회코드를 입력하세요.";
+        messageEl.className = "message error";
+        resultEl.style.display = "none";
+        return;
+      }
+
+      const key = code.toUpperCase();
+      const data = gradeData[key];
+
+      if (!data) {
+        messageEl.textContent = "일치하는 조회코드가 없습니다. 다시 확인하세요.";
+        messageEl.className = "message error";
+        resultEl.style.display = "none";
+        return;
+      }
+
+      // 결과 채우기
+      document.getElementById("totalScore").textContent = data.total ?? "-";
+      document.getElementById("grade").textContent = data.grade ?? "-";
+
+      messageEl.textContent = "성적이 정상적으로 조회되었습니다.";
+      messageEl.className = "message success";
+      resultEl.style.display = "block";
+    }
+
+    function clearResultInternal() {
+      document.getElementById("codeInput").value = "";
+      document.getElementById("message").textContent = "";
+      document.getElementById("result").style.display = "none";
+    }
+
+    // 🔹 버튼에서 호출하는 이름을 전역으로 연결
+    window.lookupGrade = lookupGradeInternal;
+    window.clearResult = clearResultInternal;
+  </script>
+</body>
+</html>
