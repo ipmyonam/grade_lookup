@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>성적 조회 시스템</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 16px;
+      line-height: 1.5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    label {
+      font-weight: 600;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    button.primary {
+      background-color: #2563eb;
+      color: white;
+    }
+    button.secondary {
+      background-color: #e5e7eb;
+      margin-left: 8px;
+    }
+    .result {
+      margin-top: 20px;
+    }
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .result-table th,
+    .result-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    .message {
+      margin-top: 16px;
+      font-weight: 600;
+    }
+    .message.error {
+      color: #b91c1c;
+    }
+    .message.success {
+      color: #065f46;
+    }
+    .note {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>성적 조회</h1>
+
+  <div class="card">
+    <p>
+      아래에 <strong>본인 전용 조회코드</strong>를 입력하세요.<br />
+      (예: 수업 시간에 안내한 6자리 숫자 또는 영문+숫자 코드)
+    </p>
+
+    <label for="codeInput">조회코드 입력</label>
+    <input
+      type="text"
+      id="codeInput"
+      placeholder="예: 24A001"
+      autocomplete="off"
+    />
+
+    <button class="primary" onclick="lookupGrade()">조회</button>
+    <button class="secondary" onclick="clearResult()">초기화</button>
+
+    <div id="message" class="message"></div>
+
+    <div id="result" class="result" style="display:none;">
+      <h2>조회 결과</h2>
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>점수</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>중간고사</td>
+            <td id="midScore"></td>
+          </tr>
+          <tr>
+            <td>기말고사</td>
+            <td id="finalScore"></td>
+          </tr>
+          <tr>
+            <td>과제/출석</td>
+            <td id="etcScore"></td>
+          </tr>
+          <tr>
+            <td><strong>총점</strong></td>
+            <td id="totalScore"></td>
+          </tr>
+          <tr>
+            <td>등급</td>
+            <td id="grade"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      * 개인정보 보호를 위해 이름 대신 <strong>조회코드</strong>만 사용합니다.<br />
+      * 조회코드는 교수님이 수업 시간 또는 LMS 공지로 개별 안내한 코드입니다.
+    </p>
+  </div>
+
+  <script>
+    // 🔹 여기 부분에 학생별 성적 데이터를 입력하시면 됩니다.
+    // 키(key)는 학생에게 알려줄 "조회코드"입니다.
+    // 예시: "24A001", "24A002" …
+    const gradeData = {
+      // 예시 데이터
+      "24A001": {
+        // name은 안 써도 되지만, 교수님 확인용으로 넣어둘 수 있습니다.
+        name: "홍길동",      // 화면에는 표시 안 함
+        mid: 88,
+        final: 92,
+        etc: 15,
+        total: 95,
+        grade: "A+"
+      },
+      "24A002": {
+        name: "김철수",
+        mid: 75,
+        final: 80,
+        etc: 13,
+        total: 84,
+        grade: "B+"
+      },
+      "24A003": {
+        name: "이영희",
+        mid: 90,
+        final: 93,
+        etc: 14,
+        total: 96,
+        grade: "A+"
+      }
+      // 👉 실제로 사용하실 때는 여기 아래에 계속해서 학생 코드를 추가하세요.
+      // "24A004": { mid: .., final: .., etc: .., total: .., grade: ".." },
+    };
+
+    function lookupGrade() {
+      const codeInput = document.getElementById("codeInput");
+      const code = codeInput.value.trim();
+      const messageEl = document.getElementById("message");
+      const resultEl = document.getElementById("result");
+
+      if (!code) {
+        messageEl.textContent = "조회코드를 입력하세요.";
+        messageEl.className = "message error";
+        resultEl.style.display = "none";
+        return;
+      }
+
+      // 대소문자 구분 없이 처리하고 싶으면 아래처럼 변환
+      const key = code.toUpperCase();
+      const data = gradeData[key];
+
+      if (!data) {
+        messageEl.textContent = "일치하는 조회코드가 없습니다. 다시 확인하세요.";
+        messageEl.className = "message error";
+        resultEl.style.display = "none";
+        return;
+      }
+
+      // 값 채우기
+      document.getElementById("midScore").textContent = data.mid ?? "-";
+      document.getElementById("finalScore").textContent = data.final ?? "-";
+      document.getElementById("etcScore").textContent = data.etc ?? "-";
+      document.getElementById("totalScore").textContent = data.total ?? "-";
+      document.getElementById("grade").textContent = data.grade ?? "-";
+
+      messageEl.textContent = "성적이 정상적으로 조회되었습니다.";
+      messageEl.className = "message success";
+
+      resultEl.style.display = "block";
+    }
+
+    function clearResult() {
+      document.getElementById("codeInput").value = "";
+      document.getElementById("message").textContent = "";
+      document.getElementById("result").style.display = "none";
+    }
+  </script>
+</body>
+</html>
