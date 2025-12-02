@@ -141,12 +141,15 @@
   </div>
 
 <script>
+  // 🔹 여기에 교수님이 엑셀로 만든 gradeData 내용을 넣으시면 됩니다.
+  // 예시만 넣어둘게요.
   const gradeData = {
     "24A001": { mid: 88, final: 92, etc: 15, total: 95, grade: "A+" },
     "24A002": { mid: 75, final: 80, etc: 13, total: 84, grade: "B+" }
+    // ...
   };
 
-  function lookupGrade() {
+  function lookupGradeInternal() {
     const codeInput = document.getElementById("codeInput");
     const code = codeInput.value.trim();
     const messageEl = document.getElementById("message");
@@ -181,14 +184,19 @@
     resultEl.style.display = "block";
   }
 
-  function clearResult() {
+  function clearResultInternal() {
     document.getElementById("codeInput").value = "";
     document.getElementById("message").textContent = "";
     document.getElementById("result").style.display = "none";
   }
+
+  // 🔹 버튼에서 쓰는 이름을 전역(window)에 연결
+  window.lookupGrade = lookupGradeInternal;
+  window.clearResult = clearResultInternal;
 </script>
 </body>
 </html>
+
 
 
 
